@@ -1,7 +1,13 @@
 import json
+import os
 from datetime import datetime, time, timedelta
 from flask import Flask, request, jsonify
 import mysql.connector
+
+# Retrieve Azure MySQL connection details from environment variables
+azure_mysql_host = os.environ.get("AZURE_MYSQL_HOST")
+azure_mysql_password = os.environ.get("AZURE_MYSQL_PASSWORD")
+azure_mysql_user = os.environ.get("AZURE_MYSQL_USER")
 
 class TimedeltaEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -54,7 +60,7 @@ class RestaurantRecommendationSystem:
         return restaurant.openHour <= current_time <= restaurant.closeHour
 
     def get_recommendation(self, criteria):
-        conn = mysql.connector.connect(host='localhost', user='root', password='Akshatj@355', db='restaurants')
+        conn = mysql.connector.connect(host=azure_mysql_host, user=azure_mysql_user, password=azure_mysql_password, db='restaurants')
         cur = conn.cursor()
 
         query = """
@@ -82,7 +88,7 @@ class RestaurantRecommendationSystem:
         return restaurants
 
 # Create a MySQL connection without specifying a database
-db = mysql.connector.connect(host='localhost', user='root', password='Akshatj@355')
+db = mysql.connector.connect(host=azure_mysql_host, user=azure_mysql_user, password=azure_mysql_password)
 cursor = db.cursor()
 
 # Drop the 'restaurants' database if it already exists
@@ -115,7 +121,7 @@ CREATE TABLE IF NOT EXISTS restaurants (
 cursor.execute(create_table_query)
 
 # Reconnect to the 'restaurants' database
-db = mysql.connector.connect(host='localhost', user='root', password='Akshatj@355', database='restaurants')
+db = mysql.connector.connect(host=azure_mysql_host, user=azure_mysql_user, password=azure_mysql_password, database='restaurants')
 cursor = db.cursor()
 
 # Insert data into the database
