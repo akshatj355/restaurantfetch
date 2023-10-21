@@ -157,7 +157,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return "<h1>Hello Azure!</h1>"
+    return "<h1>Hello! Welcome to Restaurants Listing App, hosted on Azure.</h1>"
 
 @app.route("/api/health", methods=["GET"])
 def health_check():
