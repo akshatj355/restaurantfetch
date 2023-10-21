@@ -81,7 +81,7 @@ class RestaurantRecommendationSystem:
 
         return restaurants
 
-db = mysql.connector.connect(host='localhost', user='root', password='Akshatj@355', db='restaurants')
+db = mysql.connector.connect(host='restaurantfetch-server', user='nweikyohdm', password='OA423FQ81XB3WSLG$', db='restaurants')
 recommendation_system = RestaurantRecommendationSystem(db)
 
 app = Flask(__name__)
