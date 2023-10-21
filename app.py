@@ -67,7 +67,6 @@ class RestaurantRecommendationSystem:
             query += f" {key} = '{value}' AND"
 
         query = query[:-4]
-
         cur.execute(query)
         results = cur.fetchall()
         cur.close()
