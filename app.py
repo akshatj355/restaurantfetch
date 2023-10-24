@@ -25,7 +25,19 @@ class Restaurant:
         self.closeHour = self.get_time_from_string(closeHour)
         self.vegetarian = vegetarian
         self.delivery = delivery
-
+    
+    def to_json(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "style": self.style,
+            "address": self.address,
+            "openHour": self.openHour.strftime('%H:%M'),
+            "closeHour": self.closeHour.strftime('%H:%M'),
+            "vegetarian": self.vegetarian,
+            "delivery": self.delivery
+        }
+    
     def get_time_from_string(self, time_str):
         if isinstance(time_str, str):
             hour, minute = map(int, time_str.split(':'))
@@ -39,19 +51,7 @@ class Restaurant:
         else:
             raise ValueError("Invalid time format")
 
-    def to_json(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "style": self.style,
-            "address": self.address,
-            "openHour": self.openHour.strftime('%H:%M'),
-            "closeHour": self.closeHour.strftime('%H:%M'),
-            "vegetarian": self.vegetarian,
-            "delivery": self.delivery
-        }
-
-class RestaurantRecommendationSystem:
+class RestaurantRecommendationSystemAPI:
     def __init__(self, db):
         self.db = db
 
@@ -68,8 +68,11 @@ class RestaurantRecommendationSystem:
             FROM restaurants
             WHERE 
         """
-
+        attributes_list = ["id", "name", "style", "address", "openHour", "closeHour", "vegetarian", "delivery"]
+        
         for key, value in criteria.items():
+            if key not in attributes_list:
+                return
             query += f" {key} = '{value}' AND"
 
         query = query[:-4]
@@ -151,17 +154,17 @@ INSERT INTO restaurants (name, style, address, openHour, closeHour, vegetarian, 
 
 cursor.execute(insert_query)
 db.commit()
-recommendation_system = RestaurantRecommendationSystem(db)
+recommendation_system = RestaurantRecommendationSystemAPI(db)
 
 app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return "<h1>Hello! Welcome to Restaurants Listing Sample App with API, hosted on Azure App Services.</h1>"
+    return "<h1><center>Hello! Welcome to Restaurants Listing Sample App with API, hosted on Azure App Services. 🙏🏻</center></h1>"
 
 @app.route("/api/health", methods=["GET"])
 def health_check():
-    return "OK"
+    return "<h1><center>OK, Your app is running fine. 😄 </center></h1>"
 
 @app.route("/api/recommendation", methods=["GET"])
 def get_recommendation():
@@ -169,7 +172,7 @@ def get_recommendation():
     criteria = request.args
 
     if not criteria:
-        return "No arguments/parameters passed."
+        return "<h1><center> No arguments/parameters passed.</center></h1>"
 
     # Get the recommendation from the restaurant recommendation system
     recommendations = recommendation_system.get_recommendation(criteria)
@@ -187,7 +190,10 @@ def get_recommendation():
             "vegetarian": "yes" if restaurant['vegetarian'] == 1 else "no",
             "delivery": "yes" if restaurant['delivery'] == 1 else "no"
         })
-
+    
+    if not formatted_recommendations:
+        return "<h1><center> No Restaurant for above criteria is open now or Invalid Query......☹️</center></h1>"
+    
     return jsonify(formatted_recommendations)
 
 if __name__ == "__main__":
