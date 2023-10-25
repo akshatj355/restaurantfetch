@@ -192,7 +192,7 @@ def get_recommendation():
         })
     
     if not formatted_recommendations:
-        return "<h1><center> No Restaurant for above criteria is open now or Invalid Query...☹️</center></h1>"
+        return "<h1><center> No Restaurant for above criteria is open now...☹️</center></h1>"
     
     return jsonify(formatted_recommendations)
 
